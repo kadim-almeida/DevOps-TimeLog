@@ -10,6 +10,7 @@ import { useAppDispatch } from '../../helpers/hooks';
 import { addAllCoreState } from '../../redux/core/coreSlice';
 import { ContextType } from '../../enums/ContextType';
 import TimeLogDashboard from '../../components/timeLogDashboard/TimeLogDashboard';
+import { isStandalone, MOCK_USER, MOCK_ORGANIZATION, MOCK_PROJECT } from '../../helpers/standalone';
 
 export const TimeLogDevOpsSummary: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +19,19 @@ export const TimeLogDevOpsSummary: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
+    if (isStandalone()) {
+      dispatch(
+        addAllCoreState({
+          contextType: ContextType.DEVOPS,
+          token: '',
+          organization: MOCK_ORGANIZATION,
+          project: MOCK_PROJECT,
+        })
+      );
+      setUser(MOCK_USER as SDK.IUserContext);
+      setLoading(false);
+      return;
+    }
     SDK.init().then(async () => {
       SDK.register(SDK.getContributionId(), () => {});
       await SDK.ready();

@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const packageJson = require('./package.json');
 const Dotenv = require('dotenv-webpack');
 const webpack = require('webpack');
 
@@ -119,6 +120,9 @@ module.exports = (env) => ({
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      APP_VERSION: JSON.stringify(packageJson.version),
+    }),
     new Dotenv({ path: env.mode == 'development' ? './.env' : `./.env.${env.mode}` }),
     new CopyWebpackPlugin({
       patterns: [

@@ -8,6 +8,7 @@ import { useFetchCreateDocumentMutation } from '../../redux/extensionDataManager
 import { TimeType } from '../../interfaces';
 import About from '../../components/timeLogAdmin/forms/About';
 import { _VALUES } from '../../resources/_constants/values';
+import { isStandalone, MOCK_USER } from '../../helpers/standalone';
 
 export const TimelogAdmin: React.FC = () => {
   const [timeLogType, setTimeLogType] = useState<TimeType>();
@@ -15,6 +16,11 @@ export const TimelogAdmin: React.FC = () => {
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
+    if (isStandalone()) {
+      setVersion(typeof APP_VERSION !== 'undefined' ? `${APP_VERSION}-standalone` : '0.0.0-standalone');
+      setTimeLogType({ user: MOCK_USER.displayName, userId: MOCK_USER.id });
+      return;
+    }
     SDK.init().then(async () => {
       SDK.register(SDK.getContributionId(), () => {});
       await SDK.ready();

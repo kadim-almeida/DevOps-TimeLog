@@ -11,12 +11,13 @@ interface AboutProps {
 
 const About: React.FC<AboutProps> = (props) => {
   return (
-    <MainWrapperComponent
-      headerProps={{
-        title: _VALUES.ABOUT_TIMELOG_FOR_AZURE_DEVOPS,
-      }}
-    >
-      <Grid container flexDirection="column" spacing={3}>
+    <Box sx={{ alignSelf: 'flex-start', width: '100%' }}>
+      <MainWrapperComponent
+        headerProps={{
+          title: _VALUES.ABOUT_TIMELOG_FOR_AZURE_DEVOPS,
+        }}
+      >
+        <Grid container flexDirection="column" spacing={3}>
         <Grid item>
           <TextSimpleComponent
             fullWidth
@@ -37,8 +38,8 @@ const About: React.FC<AboutProps> = (props) => {
               </Box>
             }
             value={
-              <a className="hover-underline" href={`mailto:yamilet@techsbcn.com`}>
-                yamilet@techsbcn.com
+              <a className="hover-underline" href={`mailto:suporte@onefactory.com.br`}>
+                suporte@onefactory.com.br
               </a>
             }
           />
@@ -46,8 +47,14 @@ const About: React.FC<AboutProps> = (props) => {
         <Grid item>
           <TechsbcnPoweredComponent />
         </Grid>
+        <Grid item>
+          <Box component="p" sx={{ fontSize: '0.75rem', color: 'text.secondary', margin: 0 }}>
+            Este sistema é baseado no Time Log para Azure DevOps, extensão original da TechsBCN, adaptada e customizada para este ambiente.
+          </Box>
+        </Grid>
       </Grid>
     </MainWrapperComponent>
+    </Box>
   );
 };
 

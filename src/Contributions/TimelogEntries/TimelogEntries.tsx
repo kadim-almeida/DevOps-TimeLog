@@ -14,30 +14,26 @@ import { useFetchCreateDocumentMutation } from '../../redux/extensionDataManager
 import { _VALUES } from '../../resources';
 import { getHoursFromMinutes, getMinutesFromHours } from '../../helpers/TimeHelper';
 import { PatchWorkItem, WorkItemFormService } from '../../redux/workItem/workItemAPI';
+import { isStandalone, MOCK_USER } from '../../helpers/standalone';
 
 export const TimelogEntries: React.FC = () => {
   const [workItemId, setWorkItemId] = useState<number>();
   const [workItemName, setWorkItemName] = useState<string>();
 
   useEffect(() => {
+    if (isStandalone()) {
+      setWorkItemId(1001);
+      setWorkItemName('Tarefa exemplo A');
+      return;
+    }
     SDK.init().then(async () => {
       SDK.register(SDK.getContributionId(), () => {
         return {
-          // Called when the active work item is modified
           onFieldChanged: (args: IWorkItemFieldChangedArgs) => {},
-          // Called when a new work item is being loaded in the UI
           onLoaded: (args: IWorkItemLoadedArgs) => {},
-
-          // Called when the active work item is being unloaded in the UI
           onUnloaded: (args: IWorkItemChangedArgs) => {},
-
-          // Called after the work item has been saved
           onSaved: (args: IWorkItemChangedArgs) => {},
-
-          // Called when the work item is reset to its unmodified state (undo)
           onReset: (args: IWorkItemChangedArgs) => {},
-
-          // Called when the work item has been refreshed from the server
           onRefreshed: (args: IWorkItemChangedArgs) => {},
         };
       });
@@ -51,7 +47,7 @@ export const TimelogEntries: React.FC = () => {
   }, []);
 
   const createNewEntry = async (data: any): Promise<TimeLogEntry> => {
-    const user = SDK.getUser();
+    const user = isStandalone() ? MOCK_USER : SDK.getUser();
     const timeEntry: TimeLogEntry = {
       user: user.displayName,
       userId: user.id,
@@ -68,8 +64,12 @@ export const TimelogEntries: React.FC = () => {
   const [create, { isLoading: isCreating }] = useFetchCreateDocumentMutation();
 
   const onSubmit = async (data: any) => {
-    const workItemFormService = await WorkItemFormService;
     const newEntry = await createNewEntry(data);
+    if (isStandalone()) {
+      create({ collectionName: process.env.ENTRIES_COLLECTION_NAME as string, doc: newEntry });
+      return;
+    }
+    const workItemFormService = await WorkItemFormService;
     const hours = getHoursFromMinutes(newEntry.time);
 
     PatchWorkItem(['Completed Work', 'Remaining Work'], (item: any) => {
@@ -94,7 +94,7 @@ export const TimelogEntries: React.FC = () => {
         <TimelogEntriesForm action={onSubmit} loading={isCreating} />
       </Grid>
       <Grid item xs={12}>
-        {workItemId && <TimelogEntriesTable workItemId={workItemId} />}
+        {(workItemId || isStandalone()) && <TimelogEntriesTable workItemId={workItemId ?? 1001} />}
       </Grid>
     </Grid>
   );

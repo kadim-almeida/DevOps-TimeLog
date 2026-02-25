@@ -12,6 +12,7 @@ import * as VSSInterfaces from 'azure-devops-node-api/interfaces/common/VSSInter
 import { AuthHeader, GetProjectTL } from '../../helpers/RequestHeaders';
 import { ErrorHandler, ResponseHandler } from '../../helpers/ResponseHandler';
 import { ContextType } from '../../enums/ContextType';
+import { isStandalone, MOCK_TEAMS, MOCK_MEMBERS } from '../../helpers/standalone';
 
 export const GetProjectContext = async () => {
   return new Promise<API.IProjectInfo>((resolve, reject) =>
@@ -75,6 +76,7 @@ export const GetAllTeamsNodeAPI = async () => {
 };
 
 export const GetTeams = async (contextType: ContextType, projectId?: string) => {
+  if (isStandalone()) return MOCK_TEAMS as any;
   return contextType === ContextType.DEVOPS ? await GetTeamsSDK() : await GetTeamsAPI(projectId ?? GetProjectTL());
 };
 
@@ -123,6 +125,7 @@ export const GetTeamMembersSDK = async (teamId: string) => {
   );
 };
 export const GetTeamMembers = async (teamId: string, contextType: ContextType, projectId?: string) => {
+  if (isStandalone()) return [...MOCK_MEMBERS] as Member[];
   return contextType === ContextType.DEVOPS
     ? await GetTeamMembersSDK(teamId)
     : await GetTeamMembersNodeAPI(teamId, projectId ?? GetProjectTL());

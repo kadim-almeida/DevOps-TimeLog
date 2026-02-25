@@ -4,6 +4,7 @@ import './styles/Global.scss';
 import store from './redux/store';
 import { Provider } from 'react-redux';
 import { Box } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { initBackend } from 'absurd-sql/dist/indexeddb-main-thread';
 import { MainLayoutSimple } from 'techsbcn-storybook';
 import React, { createContext } from 'react';
@@ -11,6 +12,24 @@ import { useTeamsFx } from '@microsoft/teamsfx-react';
 import { Provider as ProviderFluent, teamsTheme, ThemePrepared } from '@fluentui/react-northstar';
 import { TeamsFx } from '@microsoft/teamsfx';
 import NavbarTechsbcnPoweredComponent from './components/shared/NavbarTechsbcnPoweredComponent';
+
+const banrisulTheme = createTheme({
+  palette: { primary: { main: '#0094FF' }, secondary: { main: '#936FFA' } },
+  typography: {
+    fontFamily: '"Source Sans 3", "Source Sans Pro", sans-serif',
+    h1: { fontFamily: '"Exo 2", sans-serif' },
+    h2: { fontFamily: '"Exo 2", sans-serif' },
+    h3: { fontFamily: '"Exo 2", sans-serif' },
+    h4: { fontFamily: '"Exo 2", sans-serif' },
+    h5: { fontFamily: '"Exo 2", sans-serif' },
+    h6: { fontFamily: '"Exo 2", sans-serif' },
+  },
+  components: {
+    MuiPaper: { styleOverrides: { root: { boxShadow: 'none' } } },
+    MuiCard: { styleOverrides: { root: { boxShadow: 'none' } } },
+    MuiDialog: { styleOverrides: { paper: { boxShadow: 'none' } } },
+  },
+});
 
 export const initSQL = () => {
   const worker = new Worker(new URL('./index.worker.js', import.meta.url));
@@ -24,14 +43,16 @@ export const showRootComponent = (component: React.ReactElement<any>) => {
   container &&
     createRoot(container).render(
       <Provider store={store}>
-        <MainLayoutSimple
-          mainComponent={
-            <>
-              <NavbarTechsbcnPoweredComponent />
-              <Box mb={2}>{component}</Box>
-            </>
-          }
-        />
+        <ThemeProvider theme={banrisulTheme}>
+          <MainLayoutSimple
+            mainComponent={
+              <>
+                <NavbarTechsbcnPoweredComponent />
+                <Box mb={2}>{component}</Box>
+              </>
+            }
+          />
+        </ThemeProvider>
       </Provider>
     );
 };

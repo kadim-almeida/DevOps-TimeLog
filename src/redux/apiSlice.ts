@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import * as nodeApi from 'azure-devops-node-api';
+import { isStandalone } from '../helpers/standalone';
 
 const BHeader = () => {
   return { 'Content-Type': 'application/json' };
@@ -77,6 +78,14 @@ export const apiSlice = createApi({
         { workItem: number; organizationName?: string; projectId?: string; token?: string }
       >({
         queryFn: async (request) => {
+          if (isStandalone()) {
+            const titles: Record<number, string> = { 1001: 'Tarefa exemplo A', 1002: 'Tarefa exemplo B', 1003: 'Tarefa exemplo C' };
+            return {
+              data: request.workItem
+                ? [{ WorkItemId: request.workItem, Title: titles[request.workItem] || `Tarefa ${request.workItem}`, Parent: undefined }]
+                : [],
+            };
+          }
           const workItems = await GetWorkItemsNode(
             [request.workItem],
             request.organizationName,

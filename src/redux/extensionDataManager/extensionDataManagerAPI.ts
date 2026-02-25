@@ -5,6 +5,7 @@ import { GetWebApi } from '../apiSlice';
 import * as nodeApi from 'azure-devops-node-api';
 import * as ExtensionManagementApi from 'azure-devops-node-api/ExtensionManagementApi';
 import { TimeLogEntry } from '../../interfaces';
+import { isStandalone, MOCK_ENTRIES, MOCK_ACTIVITIES } from '../../helpers/standalone';
 
 export const ExtensionDataService = (async () => {
   return await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
@@ -54,6 +55,15 @@ export const CheckInstalledExtension = async (token?: string) => {
 };
 
 export const GetDocumentsAPI = async (collectionName: string, token?: string) => {
+  if (isStandalone()) {
+    if (collectionName === process.env.ACTIVITIES_COLLECTION_NAME || (collectionName && collectionName.indexOf('TimeLogActivities') !== -1)) {
+      return [...MOCK_ACTIVITIES];
+    }
+    if (collectionName === process.env.ENTRIES_COLLECTION_NAME || (collectionName && collectionName.indexOf('TimeLog') !== -1)) {
+      return [...MOCK_ENTRIES];
+    }
+    return [];
+  }
   const extensionDataManager = await ExtensionDataManagerNodeAPI(token);
   return new Promise<any[]>((resolve, reject) =>
     extensionDataManager
@@ -68,6 +78,15 @@ export const GetDocumentsAPI = async (collectionName: string, token?: string) =>
 };
 
 export const GetDocuments = async (collectionName: string) => {
+  if (isStandalone()) {
+    if (collectionName === process.env.ACTIVITIES_COLLECTION_NAME || (collectionName && collectionName.indexOf('TimeLogActivities') !== -1)) {
+      return [...MOCK_ACTIVITIES];
+    }
+    if (collectionName === process.env.ENTRIES_COLLECTION_NAME || (collectionName && collectionName.indexOf('TimeLog') !== -1)) {
+      return [...MOCK_ENTRIES];
+    }
+    return [];
+  }
   const extensionDataManager = await ExtensionDataManager();
   return new Promise<any[]>((resolve, reject) =>
     extensionDataManager
@@ -101,6 +120,7 @@ export const CreateDocumentNodeAPi = async (
 };
 
 export const CreateDocument = async (collectionName: string, doc: any) => {
+  if (isStandalone()) return { ...doc, id: `local-${Date.now()}` };
   const extensionDataManager = await ExtensionDataManager();
   return new Promise<any>((resolve, reject) =>
     extensionDataManager
@@ -115,6 +135,7 @@ export const CreateDocument = async (collectionName: string, doc: any) => {
 };
 
 export const RemoveDocument = async (collectionName: string, id: string) => {
+  if (isStandalone()) return;
   const extensionDataManager = await ExtensionDataManager();
   return new Promise<void>((resolve, reject) =>
     extensionDataManager
@@ -128,6 +149,7 @@ export const RemoveDocument = async (collectionName: string, id: string) => {
   );
 };
 export const SetDocument = async (collectionName: string, doc: any) => {
+  if (isStandalone()) return doc;
   const extensionDataManager = await ExtensionDataManager();
   return new Promise<any>((resolve, reject) =>
     extensionDataManager
@@ -142,6 +164,7 @@ export const SetDocument = async (collectionName: string, doc: any) => {
 };
 
 export const UpdateDocument = async (collectionName: string, doc: any) => {
+  if (isStandalone()) return doc;
   const extensionDataManager = await ExtensionDataManager();
   return new Promise<any>((resolve, reject) =>
     extensionDataManager

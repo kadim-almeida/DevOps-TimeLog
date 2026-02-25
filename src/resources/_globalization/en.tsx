@@ -81,7 +81,7 @@ export const GLOBAL_EN = {
   contact: 'Contact',
   poweredBy: 'Powered By',
   version: 'Version',
-  aboutTimeLogForAzureDevOps: 'About Time Log For Azure DevOps',
+  aboutTimeLogForAzureDevOps: 'About OnTime log For Azure DevOps',
   loading: 'Loading',
   chooseOrganization: 'Choose the organization you want to link to Azure DevOps:',
   chooseProjects: 'Choose the project you want to link to Azure DevOps:',
